@@ -3,17 +3,12 @@ from pathlib import Path
 
 from.data_prep import prep_data
 
-def daily_returns(window_size):
-    # Read the aapl data, set the `date` as the index
-    aapl_csv_path = Path("data/aapl.csv")
-
-    aapl_df = pd.read_csv(
-        aapl_csv_path, index_col="date", infer_datetime_format=True, parse_dates=True
-    )
-    # Use the `drop` function to drop the extra columns
-    aapl_df.drop(columns=["volume"], inplace=True)
-
-    #window_size =7
-    df1 = aapl_df.rolling(window=window_size).mean() 
+def daily_returns (coin):
+    # Get the coin closing data form all the exchanges
+    df = prep_data(coin)
+    
+    df_daily_returns = df.pct_change().dropna()
+     
+    df1 = df_daily_returns
     return df1
     
