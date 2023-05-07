@@ -20,7 +20,12 @@ app.layout = html.Div([
    
     html.Div(className='row',children=['Select a Risk Indicator:', 
         
-        dcc.RadioItems(options=['daily_returns', 'standard_deviation', 'beta', 'sharpe_ratio'],
+        dcc.RadioItems(options=[
+                    {'label':'Daily Returns', 'value':'daily_returns'},
+                    {'label':'Standard Deviation', 'value':'standard_deviation'},
+                    {'label':'Beta', 'value':'beta'},
+                    {'label':'Sharpe Ratio','value':'sharpe_ratio'}
+                    ],
                        value='daily_returns',
                        inline=True,
                        id='my_radio_buttons_risk_indicator'),
@@ -50,6 +55,20 @@ app.layout = html.Div([
         
     ],style={'border':'2px solid Coral','color':'white','textAlign': 'left', 'background-color': 'black','fontSize': 14}),
 
+ html.Div(className='row',children=['Select a Rolling Window:', 
+        
+       dcc.RadioItems(options=[
+                    {'label':'7 Days', 'value':7},
+                    {'label':'30 Days', 'value':30},
+                    {'label':'180 Days', 'value':180}
+
+                    ],
+                       value=7,
+                       inline=True,
+                       id='rolling_window'),
+        
+        
+    ],style={'border':'2px solid Coral','color':'white','textAlign': 'left', 'background-color': 'black','fontSize': 14}),
     html.Div(className='row', children=[
             dcc.Graph(figure={}, id='histo-chart-final')
             
@@ -60,13 +79,14 @@ app.layout = html.Div([
 # Add controls to build the interaction
 @callback(
     Output(component_id='histo-chart-final', component_property='figure'),
-    [Input(component_id='my_radio_buttons_risk_indicator', component_property='value'),
-    Input(component_id='crypto_selector', component_property='value')]
+    [Input(component_id='my_radio_buttons_risk_indicator', component_property='value'), 
+    Input(component_id='crypto_selector', component_property='value'),
+    Input(component_id='rolling_window', component_property='value')]
 	
 )
-def update_graph(value1, value2):
+def update_graph(value1, value2, value3):
         if value1== 'daily_returns':
-           df = daily_returns(180)
+           df = daily_returns(value2, value3)
            figure=px.line(df,title='Daily Returns - 180 Days Rolling Window')
            figure.update_layout(
                yaxis_title=value2+' Crypto Currency Daily Returns',
@@ -75,7 +95,7 @@ def update_graph(value1, value2):
            return figure       
         if value1== 'sharpe_ratio':
           
-           df = sharpe_ratio(value2)
+           df = sharpe_ratio(value2, value3)
            figure=px.bar(df,title=value2+' Sharpe Ratio - 180 Days Rolling Window')
            figure.update_layout(
                yaxis_title=value2+' Crypto Currency Sharpe Ratio',
@@ -83,7 +103,7 @@ def update_graph(value1, value2):
             )
            return figure
         if value1== 'standard_deviation':
-           df = standard_deviation(value2)
+           df = standard_deviation(value2, value3)
            figure=px.bar(df,title='Standard Deviation - 180 Days Rolling Window')
            figure.update_layout(
                yaxis_title=value2+' Crypto Currency Standard Devation',
@@ -91,7 +111,7 @@ def update_graph(value1, value2):
             )
            return figure       
         if value1== 'beta':
-           df = beta(value2)
+           df = beta(value2, value3)
            figure=px.bar(df,title='Beta - 180 Days Rolling Window')
            figure.update_layout(
                yaxis_title='Crypto Currency Beta Value',
