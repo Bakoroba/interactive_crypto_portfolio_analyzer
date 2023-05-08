@@ -1,41 +1,47 @@
-# Import packages
 from dash import Dash, html, dash_table, dcc, callback, Output, Input
 import pandas as pd
 import plotly.express as px
+import dash_bootstrap_components as dbc
+
 import numpy as np
 from utils.daily_returns import daily_returns
 from utils.sharpe_ratio import sharpe_ratio
 from utils.standard_deviation import standard_deviation
-from utils.beta import beta
+from utils.arbitrage import arbitrage
 
 # Initialize the app - incorporate css
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+#app = Dash(__name__, external_stylesheets=external_stylesheets)
 
-# App layout
-app.layout = html.Div([
-   
-    html.Div(className='row', children='Interactive Crypto Portfolio Analyzer and Arbitrage Dectection',
-             style={'border':'3px solid Coral','background':'blue','color':'white','textAlign': 'center', 'background-color': 'black', 'fontSize': 20}),
-   
-    html.Div(className='row',children=['Select a Risk Indicator:', 
-        
-        dcc.RadioItems(options=[
+
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+
+risk_dropdown = html.Div(
+    [
+        html.Label("Select Risk Indicator", htmlFor="state-dropdown"),
+                dbc.Select(options=[
+                  {'label':'Arbitrage', 'value':'beta'},
                     {'label':'Daily Returns', 'value':'daily_returns'},
                     {'label':'Standard Deviation', 'value':'standard_deviation'},
-                    {'label':'Beta', 'value':'beta'},
+                    #{'label':'Beta', 'value':'beta'},
                     {'label':'Sharpe Ratio','value':'sharpe_ratio'}
                     ],
-                       value='daily_returns',
-                       inline=True,
-                       id='my_radio_buttons_risk_indicator'),
-        
-        
-    ],style={'border':'2px solid Coral','color':'white','textAlign': 'left', 'background-color': 'black','fontSize': 14}),
-    
-    html.Div(className='row',children=['Select a Crypto Currency:', 
-        html.Br(),
-        dcc.RadioItems(options=[
+                      value='beta',
+  
+                       id='risk_indicator'),
+    ],                        style=dict(
+                    #width='40%',
+                    display='inline-block',
+                    verticalAlign="middle",
+                    horizontalAlign="middle"
+            
+)),
+
+crypto_dropdown = html.Div(
+    [
+        html.Label("Select Crypto Currency", htmlFor="variable-dropdown"),
+        dbc.Select(options=[
                     {'label':'BTC - Bitcoin', 'value':'BTC'},
                     {'label':'XRP - XRP Ledger', 'value':'XRP'},
                     {'label':'ETH - Ether', 'value':'ETH'},
@@ -48,38 +54,62 @@ app.layout = html.Div([
                     {'label':'XTZ - Tezos', 'value':'XTZ'}
 
                     ],
-                       value='BTC',
-                       inline=True,
-                       id='crypto_selector'),
-        
-        
-    ],style={'border':'2px solid Coral','color':'white','textAlign': 'left', 'background-color': 'black','fontSize': 14}),
+                      
+                      value='BTC',
 
- html.Div(className='row',children=['Select a Rolling Window:', 
-        
-       dcc.RadioItems(options=[
-                    {'label':'7 Days', 'value':7},
-                    {'label':'30 Days', 'value':30},
-                    {'label':'180 Days', 'value':180}
+                       id='crypto_selector'),
+    ],                       style=dict(
+                    #width='40%',
+                    display='inline-block',
+                    verticalAlign="middle",
+                    horizontalAlign="middle"
+                ),
+),
+
+rolling_dropdown = html.Div(
+    [
+        html.Label("Select Rolling Window", htmlFor="variable-dropdown"),
+        dbc.Select(options=[
+                    {'label':'1 Day', 'value':'1'},
+                    {'label':'7 Days', 'value':'7'},
+                    {'label':'30 Days', 'value':'30'},
+                    {'label':'180 Days', 'value':'180'}
 
                     ],
-                       value=7,
-                       inline=True,
-                       id='rolling_window'),
-        
-        
-    ],style={'border':'2px solid Coral','color':'white','textAlign': 'left', 'background-color': 'black','fontSize': 14}),
-    html.Div(className='row', children=[
-            dcc.Graph(figure={}, id='histo-chart-final')
-            
-    ]),
+                    value=1,
+
+                       
+                       id='rolling_window')
+    ],                        style=dict(
+                    #width='40%',
+                    display='inline-block',
+                    verticalAlign="middle",
+                    horizontalAlign="middle",
+                    
+                ),
+)
+
+
+
+#graph = dbc.Card(dcc.Graph(figure={}, id='histo-chart-final'))
+
+app.layout = dbc.Container(
+    [
+        html.H2("Interactive Crypto Portfolio Analyzer and Arbitrage Dectection", className="text-center",
+             style={'border':'3px solid Coral','background':'blue','color':'white','textAlign': 'center', 'background-color': 'black', 'fontSize': 20}),
+        dbc.Row([dbc.Col(risk_dropdown), dbc.Col(crypto_dropdown),dbc.Col(rolling_dropdown)]),
+                dbc.Row(dbc.Col(dbc.Card(dcc.Graph(figure={}, id='histo-chart-final'))),style={'border':'6px solid coral','background':'blue','color':'white','textAlign': 'center', 'background-color': 'black', 'fontSize': 20}),
+       
+    ],
+    #fluid=True,
     
-])
+       
+)
 
 # Add controls to build the interaction
 @callback(
     Output(component_id='histo-chart-final', component_property='figure'),
-    [Input(component_id='my_radio_buttons_risk_indicator', component_property='value'), 
+    [Input(component_id='risk_indicator', component_property='value'), 
     Input(component_id='crypto_selector', component_property='value'),
     Input(component_id='rolling_window', component_property='value')]
 	
@@ -87,43 +117,66 @@ app.layout = html.Div([
 def update_graph(value1, value2, value3):
         if value1== 'daily_returns':
            df = daily_returns(value2, value3)
-           figure=px.line(df,title='Daily Returns - 180 Days Rolling Window')
+           figure=px.line(df)
            figure.update_layout(
-               yaxis_title=value2+' Crypto Currency Daily Returns',
-               legend_title_text='Crypto Exchanges'    
-               )
+               yaxis_title='<b>'+value2+' Crypto Currency Daily Returns</b>',
+               legend_title_text='<b>Crypto Exchanges</b>', 
+               title= '<b>'+value2+f' Daily Returns - {value3} Days Rolling Window</b>',
+               title_x=0.5,
+               font=dict(
+                  family="Courier New, monospace",
+                  #size=18,
+                  color="RebeccaPurple")    
+            )
            return figure       
         if value1== 'sharpe_ratio':
           
            df = sharpe_ratio(value2, value3)
-           figure=px.bar(df,title=value2+' Sharpe Ratio - 180 Days Rolling Window')
+           figure=px.bar(df)
            figure.update_layout(
-               yaxis_title=value2+' Crypto Currency Sharpe Ratio',
-               legend_title_text='Crypto Exchanges'    
+               yaxis_title='<b>'+value2+' Crypto Currency Sharpe Ratio</b>',
+               legend_title_text='<b>Crypto Exchanges</b>', 
+               title= '<b>'+value2+f' Sharpe Ratio - {value3} Days Rolling Window</b>',
+               title_x=0.5,
+               font=dict(
+                  family="Courier New, monospace",
+                  #size=18,
+                  color="RebeccaPurple")    
             )
            return figure
         if value1== 'standard_deviation':
            df = standard_deviation(value2, value3)
-           figure=px.bar(df,title='Standard Deviation - 180 Days Rolling Window')
+           figure=px.bar(df)
            figure.update_layout(
-               yaxis_title=value2+' Crypto Currency Standard Devation',
-               legend_title_text='Crypto Exchanges'    
+               yaxis_title='<b>'+value2+' Crypto Currency Standard Deviation</b>',
+               legend_title_text='<b>Crypto Exchanges</b>', 
+               title= '<b>'+value2+f' Standard Deviation {value3} Days Rolling Window</b>',
+               title_x=0.5,
+               font=dict(
+                  family="Courier New, monospace",
+                  #size=18,
+                  color="RebeccaPurple")    
             )
            return figure       
         if value1== 'beta':
-           df = beta(value2, value3)
-           figure=px.bar(df,title='Beta - 180 Days Rolling Window')
+           df = arbitrage(value2, value3)
+           figure=px.bar(df)
            figure.update_layout(
-               yaxis_title='Crypto Currency Beta Value',
-               legend_title_text='Crypto Exchanges'    
+               yaxis_title='<b>'+value2+' Crypto Currency </b>',
+               legend_title_text='<b>Crypto Exchanges</b>', 
+               title= '<b>'+value2+f' Arbitrage - Price difference on Exchanges</b>',
+               title_x=0.5,
+               font=dict(
+                  family="Courier New, monospace",
+                  #size=18,
+                  color="RebeccaPurple")    
             )
            return figure
           
-           
-    
-    
-        
-
+   
 # Run the app
 if __name__ == '__main__':
     app.run_server(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
+
