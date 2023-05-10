@@ -1,3 +1,10 @@
+"""
+This is the main executable app
+- Build an interactive web GUI with dropdown menu
+- Call the processing modules and plot the resulting graph
+- Allow user to  interact with the graph
+- Provides tooltips for additional description of the axes and data of the graph
+"""
 from dash import Dash, html, dash_table, dcc, callback, Output, Input
 import pandas as pd
 import plotly.express as px
@@ -10,16 +17,13 @@ from utils.standard_deviation import standard_deviation
 from utils.arbitrage import arbitrage
 
 # Initialize the app - incorporate css
-#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-#app = Dash(__name__, external_stylesheets=external_stylesheets)
-
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-
+# Preapre dropdown html layout
 risk_dropdown = html.Div(
     [
-        html.Label("Select Risk Indicator", htmlFor="state-dropdown"),
+        html.Label("Select a Risk Indicator", style={"font-weight": "bold"}, htmlFor="risk-dropdown"),
                 dbc.Select(options=[
                   {'label':'Arbitrage', 'value':'beta'},
                     {'label':'Daily Returns', 'value':'daily_returns'},
@@ -31,7 +35,6 @@ risk_dropdown = html.Div(
   
                        id='risk_indicator'),
     ],                        style=dict(
-                    #width='40%',
                     display='inline-block',
                     verticalAlign="middle",
                     horizontalAlign="middle"
@@ -40,7 +43,7 @@ risk_dropdown = html.Div(
 
 crypto_dropdown = html.Div(
     [
-        html.Label("Select Crypto Currency", htmlFor="variable-dropdown"),
+        html.Label("Select a Crypto Currency", style={"font-weight": "bold"},htmlFor="crypto-dropdown"),
         dbc.Select(options=[
                     {'label':'BTC - Bitcoin', 'value':'BTC'},
                     {'label':'XRP - XRP Ledger', 'value':'XRP'},
@@ -59,7 +62,6 @@ crypto_dropdown = html.Div(
 
                        id='crypto_selector'),
     ],                       style=dict(
-                    #width='40%',
                     display='inline-block',
                     verticalAlign="middle",
                     horizontalAlign="middle"
@@ -68,7 +70,7 @@ crypto_dropdown = html.Div(
 
 rolling_dropdown = html.Div(
     [
-        html.Label("Select Rolling Window", htmlFor="variable-dropdown"),
+        html.Label("Select a Rolling Window", style={"font-weight": "bold"},htmlFor="rolling-dropdown"),
         dbc.Select(options=[
                     {'label':'1 Day', 'value':'1'},
                     {'label':'7 Days', 'value':'7'},
@@ -81,7 +83,6 @@ rolling_dropdown = html.Div(
                        
                        id='rolling_window')
     ],                        style=dict(
-                    #width='40%',
                     display='inline-block',
                     verticalAlign="middle",
                     horizontalAlign="middle",
@@ -91,8 +92,7 @@ rolling_dropdown = html.Div(
 
 
 
-#graph = dbc.Card(dcc.Graph(figure={}, id='histo-chart-final'))
-
+#Prepare title and dropdown seelctors layout
 app.layout = dbc.Container(
     [
         html.H2("Interactive Crypto Portfolio Analyzer and Arbitrage Dectection", className="text-center",
@@ -101,8 +101,7 @@ app.layout = dbc.Container(
                 dbc.Row(dbc.Col(dbc.Card(dcc.Graph(figure={}, id='histo-chart-final'))),style={'border':'6px solid coral','background':'blue','color':'white','textAlign': 'center', 'background-color': 'black', 'fontSize': 20}),
        
     ],
-    #fluid=True,
-    
+   
        
 )
 
@@ -114,6 +113,10 @@ app.layout = dbc.Container(
     Input(component_id='rolling_window', component_property='value')]
 	
 )
+# use callback function to process user input
+# value1 = risk indicator
+# value2 = crypto seelctor
+# value 3 = rolling window selector
 def update_graph(value1, value2, value3):
         if value1== 'daily_returns':
            df = daily_returns(value2, value3)
@@ -125,7 +128,6 @@ def update_graph(value1, value2, value3):
                title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
-                  #size=18,
                   color="RebeccaPurple")    
             )
            return figure       
@@ -140,7 +142,6 @@ def update_graph(value1, value2, value3):
                title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
-                  #size=18,
                   color="RebeccaPurple")    
             )
            return figure
@@ -154,7 +155,6 @@ def update_graph(value1, value2, value3):
                title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
-                  #size=18,
                   color="RebeccaPurple")    
             )
            return figure       
@@ -168,7 +168,6 @@ def update_graph(value1, value2, value3):
                title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
-                  #size=18,
                   color="RebeccaPurple")    
             )
            return figure
@@ -177,6 +176,4 @@ def update_graph(value1, value2, value3):
 # Run the app
 if __name__ == '__main__':
     app.run_server(debug=True)
-if __name__ == "__main__":
-    app.run(debug=True)
 
