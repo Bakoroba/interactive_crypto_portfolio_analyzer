@@ -8,11 +8,4 @@ def arbitrage(cryptocoin, window_size):
    
     df = prep_data(cryptocoin)
     
-    # Plot the price movements for the crypto currencies on the exchanges
-
-
-
-     
-     
-    
     return df
