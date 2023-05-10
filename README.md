@@ -1,10 +1,10 @@
-# interactive_crypto_portfolio_analyzer
-crypto_currency_portfolio_analyzer
+# Interactive Crypto Portfolio Analyzer
+---
 
+Crypto Currency Portfolio Aanalyzer
 Interactive Crypto Portfolio Analyzer and Arbitrage Dectection
+Use to determine the volitilaty and identify instances of arbitrage within the crypto exhcanges.
 
-
-User Stories:
 
 - This project will analyze the risk indicators  of several crypto currencies traded on several crypto exchanges to uncover patterns in the crypto market. To do so the following tasks are performed: 
 	- Calculate the daily returns of a stock traded on seevral exchanges
@@ -33,7 +33,16 @@ Data Collection and Preparation
 	- The data contains an hourly market data for ten crypto currencies on five different exchanges from 2014-2019.
 	- A limited set of data is cleaned and prepared for the application using panadas
 
-- Installation
+# Technologies
+---
+	Created using Python 3.7
+	Imported the following libraries & Packages
+ ![image](https://user-images.githubusercontent.com/123132507/236668308-492b8ef9-2cba-4215-84b6-6889e457cbee.png)
+ 
+
+
+# Installation Guide
+---
 	The following packages are required:
 		dash
 		plotly
@@ -44,7 +53,8 @@ Data Collection and Preparation
 	To install clone the repo and install the required packages
 	- To run type the following formt eh comand line: 'python app.py'
 		
-Usage:
+# Usage
+---
 	To run the app:
 	- Open a command line and type: python app.py
 	- The result on the command line:
@@ -60,3 +70,10 @@ Usage:
 		- Select a crypto currency
 		- The grapgh will be updated with the selected options
 
+# Contributers
+---
+	Bakary Sylla, Yadisa Joiner, Marcus LeGare, Patrick Jones
+
+# License
+---
+![License: ODbL](https://img.shields.io/badge/License-ODbL-brightgreen.svg)](https://opendatacommons.org/licenses/odbl/)

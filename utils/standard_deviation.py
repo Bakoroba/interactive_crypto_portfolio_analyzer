@@ -5,7 +5,7 @@ import numpy as np
 from.data_prep import prep_data
 
 def standard_deviation (cryptocoin, window_size):
-    # Get the coin closing data form all the exchanges
+    # Get the coin closing data from all the exchanges
     df = prep_data(cryptocoin)
     # Calulate the rolling standard devition
     df_standard_deviation  = df.rolling(window=int(window_size)).std()
