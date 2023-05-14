@@ -9,7 +9,7 @@ def rolling_sharpe(y):
     #return np.sqrt(126) * (y.mean() / y.std()) # 21 days per month X 6 months = 126
     return (y.mean() * year_trading_days) / (y.std() * np.sqrt(year_trading_days))
 
-def sharpe_ratio (cryptocoin, window_size):
+def sharpe_ratio (cryptocoin, window_size,value4):
     # Get the coin closing data form all the exchanges
     df = prep_data(cryptocoin)
     year_trading_days = 252
@@ -18,4 +18,5 @@ def sharpe_ratio (cryptocoin, window_size):
     df_daily_returns = df.pct_change()
      
     df1 = df_daily_returns.rolling(window=int(window_size)).apply(rolling_sharpe)
-    return df1
+    
+    return df1, df1.max(),df1.min()

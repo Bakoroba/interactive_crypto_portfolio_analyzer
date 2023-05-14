@@ -10,6 +10,9 @@ import pandas as pd
 import plotly.express as px
 import dash_bootstrap_components as dbc
 
+import plotly.graph_objects as go
+
+
 import numpy as np
 from utils.daily_returns import daily_returns
 from utils.sharpe_ratio import sharpe_ratio
@@ -31,7 +34,7 @@ risk_dropdown = html.Div(
                     #{'label':'Beta', 'value':'beta'},
                     {'label':'Sharpe Ratio','value':'sharpe_ratio'}
                     ],
-                      value='beta',
+                      value='arbitrage',
   
                        id='risk_indicator'),
     ],                        style=dict(
@@ -78,7 +81,7 @@ rolling_dropdown = html.Div(
                     {'label':'180 Days', 'value':'180'}
 
                     ],
-                    value=1,
+                    value='1',
 
                        
                        id='rolling_window')
@@ -110,6 +113,7 @@ app.layout = dbc.Container(
     Output(component_id='histo-chart-final', component_property='figure'),
     [Input(component_id='risk_indicator', component_property='value'), 
     Input(component_id='crypto_selector', component_property='value'),
+    Input(component_id='rolling_window', component_property='value'),
     Input(component_id='rolling_window', component_property='value')]
 	
 )
@@ -117,60 +121,80 @@ app.layout = dbc.Container(
 # value1 = risk indicator
 # value2 = crypto seelctor
 # value 3 = rolling window selector
-def update_graph(value1, value2, value3):
+def update_graph(value1, value2, value3,value4):
+        #df = df.reset_index(drop=True)
         if value1== 'daily_returns':
-           df = daily_returns(value2, value3)
+           df,df1,df2 = sharpe_ratio(value2, value3,value4)
+           #figure=px.line(df,x=df.index,y=df.columns)
            figure=px.line(df)
            figure.update_layout(
                yaxis_title='<b>'+value2+' Crypto Currency Daily Returns</b>',
                legend_title_text='<b>Crypto Exchanges</b>', 
-               title= '<b>'+value2+f' Daily Returns - {value3} Days Rolling Window</b>',
-               title_x=0.5,
+               title= '<b>'+value2+f' Daily Returns - {value3} Days Rolling Window</b><br>'+ f'Max: {df1}<br>Min: {df2}',
+               #title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
+                  size=10,
                   color="RebeccaPurple")    
             )
-           return figure       
+           
+           return figure 
+              
         if value1== 'sharpe_ratio':
           
-           df = sharpe_ratio(value2, value3)
+           df,df1,df2 = sharpe_ratio(value2, value3,value4)
+           #figure=px.line(df,x=df.index,y=df.columns)
            figure=px.bar(df)
+           #figure.add_trace(go.Scatter())
            figure.update_layout(
                yaxis_title='<b>'+value2+' Crypto Currency Sharpe Ratio</b>',
                legend_title_text='<b>Crypto Exchanges</b>', 
-               title= '<b>'+value2+f' Sharpe Ratio - {value3} Days Rolling Window</b>',
-               title_x=0.5,
+               title= '<b>'+value2+f' Sharpe Ratio - {value3} Days Rolling Window</b><br>'+ f'Max: {df1}<br>Min: {df2}',      
+               #title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
+                  size=10,
                   color="RebeccaPurple")    
             )
+           
            return figure
         if value1== 'standard_deviation':
-           df = standard_deviation(value2, value3)
+           df,df1,df2 = standard_deviation(value2, value3,value4)
            figure=px.bar(df)
+           #figure=px.line(df,x=df.index,y=df.columns)
+           #figure.add_trace(go.Scatter())
+           
            figure.update_layout(
                yaxis_title='<b>'+value2+' Crypto Currency Standard Deviation</b>',
                legend_title_text='<b>Crypto Exchanges</b>', 
-               title= '<b>'+value2+f' Standard Deviation {value3} Days Rolling Window</b>',
-               title_x=0.5,
+               title= '<b>'+value2+f' Standard Deviation {value3} Days Rolling Window</b><br>'+ f'Max: {df1}<br>Min: {df2}',
+               #title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
+                  size=10,
                   color="RebeccaPurple")    
             )
+           
            return figure       
-        if value1== 'beta':
-           df = arbitrage(value2, value3)
-           figure=px.bar(df)
+        if value1== 'arbitrage':
+           df, df1,df2 = arbitrage(value2, value3,value4)
+           #figure=px.line(df,x=df.index,y=df.columns)
+           figure=px.line(df)
+           #figure.add_trace(go.Scatter())
            figure.update_layout(
                yaxis_title='<b>'+value2+' Crypto Currency </b>',
                legend_title_text='<b>Crypto Exchanges</b>', 
                title= '<b>'+value2+f' Arbitrage - Price difference on Exchanges</b>',
+               #title= '<b>'+value2+f' Arbitrage - Price difference on Exchanges</b><br>'+ f'Max: {df1}<br>Min: {df2}',
                title_x=0.5,
                font=dict(
                   family="Courier New, monospace",
+                  size=10,
                   color="RebeccaPurple")    
             )
+           
            return figure
+        
           
    
 # Run the app
