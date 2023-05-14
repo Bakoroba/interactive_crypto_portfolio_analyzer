@@ -1,18 +1,25 @@
 # Interactive Crypto Portfolio Analyzer
 ---
 
-Crypto Currency Portfolio Aanalyzer
-Interactive Crypto Portfolio Analyzer and Arbitrage Dectection
-Use to determine the volitilaty and identify instances of arbitrage within the crypto exhcanges.
+# Overview
+The Interactive Crypto Portfolio Analyzer and Arbitrage Dectection App is used to determine the volitilaty and identify instances of arbitrage within the crypto exchanges.
 
+The Apps main functionalities include:
+- Use an interactive web GUI
+- Analyze the risk indicators  of crypto currencies 
+- Multiple crypto currencies are traded on several crypto exchanges
+- Uncover patterns in the crypto market price data
+- Detect arbitrage opportunities
 
-- This project will analyze the risk indicators  of several crypto currencies traded on several crypto exchanges to uncover patterns in the crypto market. To do so the following tasks are performed: 
+- The app will analyze the risk indicators  of several crypto currencies traded on several crypto exchanges to uncover patterns in the crypto market. To do so the following tasks are performed: 
 	- Calculate the daily returns of a stock traded on seevral exchanges
 	- Analyze the volatility of each of the stocks listed on in the desired ETF
 	- Evaluate the risk profile of each stock by using the standard deviation and the beta
 	- Calculate the Sharpe ratios for each portfolio to determine the risk-retun profile.
-	
-- It offers an interactive menu to allow the user to select:
+
+# Functionalities supported	
+- It offers an interactive web GUI to allow the user to select:
+
 	- The choice of risk indicator (standard deviation, beta, daily returns and sharpe ratio) based on an 180 days rolling window
 	- The choice of one ten crypto currency to analyse
 		BTC - Bitcoin
@@ -27,18 +34,31 @@ Use to determine the volitilaty and identify instances of arbitrage within the c
 		XTZ - Tezos
 		
 	- The crypto currency closing value are compared on five crypto exchanges: Coinbase,Bittrex,Bitstamp,Kraken,Gemini
+        - The choice of rolling windwo size (1, 7 , 30, or 180 days)
 
-Data Collection and Preparation
-	- Historical crypto data is collected from a CSV file
-	- The data contains an hourly market data for ten crypto currencies on five different exchanges from 2014-2019.
-	- A limited set of data is cleaned and prepared for the application using panadas
+# Data Collection and Preparation
+- Source data file: historical single crypto csv file
+- 10 crypto currencies, 5 crypto exchanges, hourly price from 7/23/2013 to 7/31/2019
+- Use pandas to build an on-demand dataframe
+- DF includes only the daily closing prices for each crypto currency on all the five exchanges
 
-# Technologies
----
-	Created using Python 3.7
-	Imported the following libraries & Packages
- ![image](https://user-images.githubusercontent.com/123132507/236668308-492b8ef9-2cba-4215-84b6-6889e457cbee.png)
- 
+
+# Directory structure
+## app.py - main module
+    - Build an interactive web GUI with dropdown menu
+    - Call the processing module and plot the resulting graph
+    - Allow user to  interact with the graph using a toolbar - Provide tooltips for additional description of  
+      the axes and data of the graph
+
+## data directory
+    - crypto.csv
+
+## Utils subdirectory
+    - data_prep.py : clean up and prepare on demand dataframe based on user input cryptocurrency
+    - sharpe_ratio.py : rolling window sharpe with selectable window size and selectable crypto currency
+    - daily_returns.py : rolling window daily returns with selectable window size and selectable crypto
+       currency
+    - arbitrage.py :  rolling window closing prices of selectable crypto currency on exchanges
 
 
 # Installation Guide
@@ -47,15 +67,17 @@ Data Collection and Preparation
 		dash
 		plotly
 		pandas
+		dash_bootstrap_components
 		plotly.express
 		numpy
 		python3
+		pathlib
 	To install clone the repo and install the required packages
-	- To run type the following formt eh comand line: 'python app.py'
+	- To run type the following  comand line: 'python app.py'
 		
 # Usage
 ---
-	To run the app:
+ ## To run the app:
 	- Open a command line and type: python app.py
 	- The result on the command line:
 		$ python app.py
@@ -63,17 +85,18 @@ Data Collection and Preparation
 
 			* Serving Flask app 'app'
 			* Debug mode: on
-	Open a browser and connect to http://127.0.0.1:8050/
+            Open a browser and connect to http://127.0.0.1:8050/
+	
+		- Select one of 4 risk indicator
+		- Select of 10 cryptocurrencies
+		- Select one of 4 rolling wndow sizes
+		- The graph will be updated with the selected options
+![image](https://github.com/Bakoroba/interactive_crypto_portfolio_analyzer/assets/7796158/e8e0d926-98e3-4980-b7fd-e17c35ae6b0d)
 
-	Menu navigation:
-		- Select a risk indicator
-		- Select a crypto currency
-		- The grapgh will be updated with the selected options
-
-# Contributers
+# Contributors
 ---
 	Bakary Sylla, Yadisa Joiner, Marcus LeGare, Patrick Jones
 
 # License
 ---
-![License: ODbL](https://img.shields.io/badge/License-ODbL-brightgreen.svg)](https://opendatacommons.org/licenses/odbl/)
+MIT
